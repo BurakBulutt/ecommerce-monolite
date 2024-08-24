@@ -1,0 +1,24 @@
+spring:
+  application:
+    name: ecommerce-monolite
+  messages:
+    basename: localization/messages
+    encoding: UTF-8
+  jpa:
+    hibernate:
+      ddl-auto: update
+    show-sql: true
+    database: postgresql
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    username: postgres
+    password: 12345
+    url: jdbc:postgresql://localhost:5432/ecommerce_monolite
+  data:
+    mongodb:
+      uri: mongodb+srv://lotheas:12345@mycluster.0br3d.mongodb.net/ecommerce_monolite?retryWrites=true&w=majority&appName=MyCluster&socketTimeoutMS=30000
+server:
+  port: 8080
+jwt :
+  secret : 6FS78AF678SDGY7DBOTJN3278342SHFJKEHF347SFNJS839RWJIOFHER
+
