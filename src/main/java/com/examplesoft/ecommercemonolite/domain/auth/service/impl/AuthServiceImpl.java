@@ -42,42 +42,27 @@ public class AuthServiceImpl implements AuthService {
 
     @Override
     @Transactional
-    public void register(RegisterRequest request, UserType userType) {
-        List<PermissionDto> permissions;
-
-        UserDto user = UserDto.builder()
+    public void register(RegisterRequest request) {
+        UserDto user = userService.save(UserDto.builder()
                 .name(request.name())
                 .surname(request.surname())
                 .username(request.username())
                 .password(encoder.encode(request.password()))
-                .build();
+                .userType(UserType.USER)
+                .isActive(Boolean.TRUE)
+                .isVerified(Boolean.TRUE)
+                .build());
 
-        switch (userType) {
-            case USER -> {
-                permissions = permissionService.getByPermissionType(PermissionType.USER);
-                user.setUserType(UserType.USER);
-                user.setIsActive(Boolean.TRUE);
-                user.setIsVerified(Boolean.TRUE);
-            }
-            case ADMIN -> {
-                permissions = permissionService.getByPermissionType(PermissionType.ADMIN);
-                user.setUserType(UserType.ADMIN);
-                user.setIsActive(Boolean.TRUE);
-                user.setIsVerified(Boolean.TRUE);
-            }
-            default -> throw new BaseException(MessageUtil.FAIL);
-        }
+        List<PermissionDto> permissions = permissionService.getByPermissionType(PermissionType.USER);
 
-        user = userService.save(user);
-
-        UserDto finalUser = user;
         permissions.forEach(permissionDto -> {
             userPermissionService.save(UserPermissionDto.builder()
-                    .user(finalUser)
+                    .user(user)
                     .permission(permissionDto)
                     .build());
         });
-        publisher.publishEvent(new UserBasketCreationEvent(finalUser.getId()));
+
+        publisher.publishEvent(new UserBasketCreationEvent(user.getId()));
     }
 
     @Override

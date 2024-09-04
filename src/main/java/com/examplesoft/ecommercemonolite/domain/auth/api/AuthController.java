@@ -26,15 +26,9 @@ public class AuthController extends BaseController {
         return response(new TokenResponse(service.login(request, UserType.ADMIN).getToken()));
     }
 
-    @PostMapping("register-user")
+    @PostMapping("register")
     public Response<Void> registerUser(@RequestBody RegisterRequest request) {
-        service.register(request, UserType.USER);
-        return success();
-    }
-
-    @PostMapping("register-admin")
-    public Response<Void> registerAdmin(@RequestBody RegisterRequest request) {
-        service.register(request, UserType.ADMIN);
+        service.register(request);
         return success();
     }
 }

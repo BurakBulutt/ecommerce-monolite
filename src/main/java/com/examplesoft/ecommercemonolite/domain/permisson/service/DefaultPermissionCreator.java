@@ -30,7 +30,8 @@ public class DefaultPermissionCreator {
     private static final String ORDER_WRITE = "order:write";
     private static final String PAYMENT_READ = "payment:read";
     private static final String PAYMENT_WRITE = "payment:write";
-
+    private static final String USER_ADDRESS_READ = "user:address:read";
+    private static final String USER_ADDRESS_WRITE = "user:address:write";
     @EventListener(value = ApplicationReadyEvent.class)
     @Order(1)
     public void createPermission(){
@@ -99,6 +100,16 @@ public class DefaultPermissionCreator {
                 .permissionType(PermissionType.USER)
                 .name(PAYMENT_WRITE)
                 .description("Payment Write Yetkisi")
+                .build());
+        permissionDtoList.add(PermissionDto.builder()
+                .permissionType(PermissionType.USER)
+                .name(USER_ADDRESS_READ)
+                .description("User Address Read Yetkisi")
+                .build());
+        permissionDtoList.add(PermissionDto.builder()
+                .permissionType(PermissionType.USER)
+                .name(USER_ADDRESS_WRITE)
+                .description("User Address Write Yetkisi")
                 .build());
 
         permissionService.saveAll(permissionDtoList);

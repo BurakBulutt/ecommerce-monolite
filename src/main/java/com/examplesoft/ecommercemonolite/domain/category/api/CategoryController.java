@@ -17,43 +17,43 @@ public class CategoryController extends BaseController {
     private final CategoryService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('category:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin','category:read')")
     public Response<PageResponse<CategoryResponse>> getAll(Pageable pageable) {
         return response(CategoryMapper.toPageResponse(service.getAll(pageable)));
     }
 
     @GetMapping("filter")
-    @PreAuthorize("hasAnyAuthority('category:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin','category:read')")
     public Response<PageResponse<CategoryResponse>> filter(Pageable pageable) {
         return response(CategoryMapper.toPageResponse(service.filter(pageable)));
     }
 
     @GetMapping("tree")
-    @PreAuthorize("hasAnyAuthority('category:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin','category:read')")
     public Response<DataResponse<CategoryTreeResponse>> getTree(){
         return response(CategoryMapper.toDataTreeResponse(service.getMainCategoriesTree()));
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('category:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<CategoryResponse> getById(@PathVariable String id) {
         return response(CategoryMapper.toResponse(service.getById(id)));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('category:write','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<CategoryResponse> save(@RequestBody CategoryRequest request) {
         return response(CategoryMapper.toResponse(service.save(CategoryMapper.toDto(request))));
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('category:write','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<CategoryResponse> update(@PathVariable String id,@RequestBody CategoryRequest request) {
         return response(CategoryMapper.toResponse(service.update(id, CategoryMapper.toDto(request))));
     }
 
     @DeleteMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('category:write','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<Void> delete(@PathVariable String id) {
         service.delete(id);
         return success();

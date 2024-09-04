@@ -30,7 +30,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     public Page<CategoryDto> filter(Pageable pageable) {
-        return null;
+        return Page.empty();
     }
 
     @Override

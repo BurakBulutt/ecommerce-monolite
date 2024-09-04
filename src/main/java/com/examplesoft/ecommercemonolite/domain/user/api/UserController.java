@@ -16,31 +16,31 @@ public class UserController extends BaseController {
     private final UserService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('user:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<PageResponse<UserResponse>> getAll(Pageable pageable) {
         return response(UserMapper.toPageResponse(service.getAll(pageable)));
     }
 
     @GetMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('user:read','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<UserResponse> getById(@PathVariable String id) {
         return response(UserMapper.toResponse(service.getById(id)));
     }
 
     @PostMapping
-    @PreAuthorize("hasAnyAuthority('user:write','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<UserResponse> save(@RequestBody UserRequest request) {
         return response(UserMapper.toResponse(service.save(UserMapper.toDto(request))));
     }
 
     @PutMapping("{id}")
-    @PreAuthorize("hasAnyAuthority('user:write','admin')")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<UserResponse> update(@PathVariable String id,@RequestBody UserRequest request) {
         return response(UserMapper.toResponse(service.update(id, UserMapper.toDto(request))));
     }
 
-    @DeleteMapping
-    @PreAuthorize("hasAnyAuthority('user:write','admin')")
+    @DeleteMapping("{id}")
+    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<Void> delete(@PathVariable String id) {
         service.delete(id);
         return success();

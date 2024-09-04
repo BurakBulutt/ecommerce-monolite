@@ -12,8 +12,8 @@ spring:
   datasource:
     driver-class-name: org.postgresql.Driver
     username: postgres
-    password: 12345
-    url: jdbc:postgresql://localhost:5432/ecommerce_monolite
+    password: postgres
+    url: jdbc:postgresql://localhost:5432/db_ecommerce_monolite
   data:
     mongodb:
       uri: mongodb+srv://lotheas:12345@mycluster.0br3d.mongodb.net/ecommerce_monolite?retryWrites=true&w=majority&appName=MyCluster&socketTimeoutMS=30000

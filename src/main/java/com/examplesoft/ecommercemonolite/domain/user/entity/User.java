@@ -1,6 +1,7 @@
 package com.examplesoft.ecommercemonolite.domain.user.entity;
 
 
+import com.examplesoft.ecommercemonolite.entitylistener.service.EntityChangesListener;
 import com.examplesoft.ecommercemonolite.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -8,7 +9,7 @@ import lombok.EqualsAndHashCode;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
-@EntityListeners(AuditingEntityListener.class)
+@EntityListeners(EntityChangesListener.class)
 @Entity
 @Table(name = User.TABLE)
 @Data
