@@ -16,16 +16,22 @@ public class ProductController extends BaseController {
     private final ProductService service;
 
     @GetMapping
-    @PreAuthorize("hasAnyAuthority('admin')")
     public Response<PageResponse<ProductResponse>> getAll(Pageable pageable) {
         return response(ProductMapper.toPageResponse(service.getAll(pageable)));
     }
 
     @GetMapping("filter")
-    @PreAuthorize("hasAnyAuthority('admin')")
-    public Response<PageResponse<ProductResponse>> filter(@RequestParam("categorySlug") String categorySlug,
+    @PreAuthorize("hasAnyAuthority('admin','product:read')")
+    public Response<PageResponse<ProductResponse>> filter(@RequestParam(value = "categorySlug", required = false) String categorySlug,
                                                           Pageable pageable) {
-        return response(ProductMapper.toPageResponse(service.filter(categorySlug,pageable)));
+        return response(ProductMapper.toPageResponse(service.filter(categorySlug, pageable)));
+    }
+
+    @GetMapping("search-filter")
+    @PreAuthorize("hasAnyAuthority('admin','product:read')")
+    public Response<PageResponse<ProductResponse>> searchFilter(@RequestParam(value = "key", required = false) String keyword,
+                                                                Pageable pageable) {
+        return response(ProductMapper.toPageResponse(service.searchFilter(keyword, pageable)));
     }
 
     @GetMapping("{id}")
@@ -34,8 +40,8 @@ public class ProductController extends BaseController {
         return response(ProductMapper.toResponse(service.getById(id)));
     }
 
-    @GetMapping("{slug}")
-    @PreAuthorize("hasAnyAuthority('admin')")
+    @GetMapping("/slug/{slug}")
+    @PreAuthorize("hasAnyAuthority('admin','product:read')")
     public Response<ProductResponse> getBySlug(@PathVariable String slug) {
         return response(ProductMapper.toResponse(service.getBySlug(slug)));
     }
@@ -48,7 +54,7 @@ public class ProductController extends BaseController {
 
     @PutMapping("{id}")
     @PreAuthorize("hasAnyAuthority('admin')")
-    public Response<ProductResponse> update(@PathVariable String id,@RequestBody ProductRequest request) {
+    public Response<ProductResponse> update(@PathVariable String id, @RequestBody ProductRequest request) {
         return response(ProductMapper.toResponse(service.update(id, ProductMapper.toDto(request))));
     }
 

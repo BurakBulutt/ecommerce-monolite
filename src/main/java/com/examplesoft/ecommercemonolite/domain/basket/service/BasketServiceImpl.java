@@ -17,6 +17,7 @@ import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
@@ -119,6 +120,35 @@ public class BasketServiceImpl implements BasketService {
         basketRepository.save(basket);
     }
 
+    @Override
+    @Transactional
+    public BasketDto deleteBasketProduct(String basketProductId) {
+        BasketDto basket = getBasket();
+
+        if (basket.getBasketProducts().stream().anyMatch(productDto -> productDto.getId().equals(basketProductId))) {
+            basketProductRepository.deleteById(basketProductId);
+        }else {
+            throw new BaseException(MessageUtil.FAIL);
+        }
+
+        return getBasket();
+    }
+
+    @EventListener
+    @Transactional
+    public void clearBasketEvent(ClearBasketEvent event){
+        Basket basket = basketRepository.findById(event.basketId()).orElseThrow(() -> new BaseException(MessageUtil.BASKET_NOT_FOUND));
+        List<BasketProduct> basketProducts = basketProductRepository.findAllByBasketId(basket.getId());
+        basketProductRepository.deleteAll(basketProducts);
+        basket.setTotalAmount(BigDecimal.ZERO);
+        basketRepository.save(basket);
+    }
+
+    @EventListener
+    public void createBasketForUserEvent(UserBasketCreationEvent event) {
+        basketRepository.save(new Basket(event.userId(), BigDecimal.ZERO));
+    }
+
     private BasketProductDto toBasketProductDto(Basket basket, BasketProduct basketProduct) {
         return BasketProductDto.builder()
                 .id(basketProduct.getId())
@@ -136,10 +166,5 @@ public class BasketServiceImpl implements BasketService {
                 .totalAmount(entity.getTotalAmount())
                 .basketProducts(basketProducts)
                 .build();
-    }
-
-    @EventListener
-    public void createBasketForUserEvent(UserBasketCreationEvent event) {
-        basketRepository.save(new Basket(event.userId(), BigDecimal.ZERO));
     }
 }

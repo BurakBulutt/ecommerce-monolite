@@ -18,4 +18,5 @@ public class ProductDto {
     private String slug;
     private String image;
     private CategoryDto mainCategory;
+
 }

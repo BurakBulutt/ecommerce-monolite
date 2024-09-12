@@ -43,6 +43,11 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
+    public UserDto findByUsername(String username) {
+        return repository.findByUsername(username).map(UserMapper::toDto).orElse(null);
+    }
+
+    @Override
     @Transactional
     public UserDto save(UserDto userDto) {
         return UserMapper.toDto(repository.save(UserMapper.toEntity(new User(), userDto)));

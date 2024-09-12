@@ -2,6 +2,7 @@ package com.examplesoft.ecommercemonolite.domain.order.service;
 
 import com.examplesoft.ecommercemonolite.domain.basket.dto.BasketDto;
 import com.examplesoft.ecommercemonolite.domain.basket.service.BasketService;
+import com.examplesoft.ecommercemonolite.domain.basket.service.ClearBasketEvent;
 import com.examplesoft.ecommercemonolite.domain.order.dto.OrderDto;
 import com.examplesoft.ecommercemonolite.domain.order.dto.OrderItemDto;
 import com.examplesoft.ecommercemonolite.domain.order.dto.OrderMapper;
@@ -28,6 +29,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -80,6 +82,9 @@ public class OrderServiceImpl implements OrderService {
         order.setPaymentId(event.paymentId());
         order.setUserId(user.getId());
         order.setOrderAddress(event.deliveryAddress());
+        order.setShipmentDate(new Date());
+
+        repository.save(order);
 
         List<OrderItemDto> orderItemDtos = new ArrayList<>();
 
@@ -89,7 +94,7 @@ public class OrderServiceImpl implements OrderService {
             orderItemDtos.add(orderItemDto);
             publisher.publishEvent(new ProductStockUpdateEvent(basketProductDto.getProduct().getId()));
         });
-
+        publisher.publishEvent(new ClearBasketEvent(basket.getId()));
         return OrderMapper.toDto(order, orderItemDtos);
     }
 

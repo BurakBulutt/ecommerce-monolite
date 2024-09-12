@@ -43,6 +43,11 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public void register(RegisterRequest request) {
+
+        if (userService.findByUsername(request.username()) != null) {
+            throw new BaseException(MessageUtil.ENTITY_ALREADY_EXISTS);
+        }
+
         UserDto user = userService.save(UserDto.builder()
                 .name(request.name())
                 .surname(request.surname())
@@ -70,7 +75,7 @@ public class AuthServiceImpl implements AuthService {
     public Token login(LoginRequest request, UserType userType) {
         CustomUserDetails userDetails = userDetailsService.loadUserByUsername(request.username());
 
-        if (encoder.matches(encoder.encode(request.password()),userDetails.getPassword())) {
+        if (!encoder.matches(request.password(), userDetails.getPassword())) {
             throw new BaseException(MessageUtil.USERNAME_OR_PASSWORD_WRONG);
         }
 
@@ -84,6 +89,6 @@ public class AuthServiceImpl implements AuthService {
                 .map(permissionDto -> new SimpleGrantedAuthority(permissionDto.getName()))
                 .toList();
 
-        return new Token(jwtUtil.generateToken(userDetails,authorities));
+        return new Token(jwtUtil.generateToken(userDetails, authorities));
     }
 }

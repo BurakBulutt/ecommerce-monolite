@@ -17,6 +17,7 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +42,7 @@ public class ProductServiceImpl implements ProductService {
     public Page<ProductDto> filter(String categorySlug, Pageable pageable) {
         List<Product> allProducts = new ArrayList<>();
 
-        if (categorySlug != null) {
+        if (StringUtils.hasLength(categorySlug)) {
             CategoryDto categoryDto = categoryService.getBySlug(categorySlug);
             CategoryTreeDto categoryTreeDto = categoryService.getCategoryTree(categoryDto, new ArrayList<>());
 
@@ -65,11 +66,18 @@ public class ProductServiceImpl implements ProductService {
     }
 
     private void getProductsFromCategory(CategoryTreeDto dto,List<Product> productList){
-        repository.findByMainCategoryId(dto.getId()).ifPresent(productList::add);
+        productList.addAll(repository.findAllByMainCategoryId(dto.getId()));
 
         dto.getChildrensList().forEach(child -> {
             getProductsFromCategory(child,productList);
         });
+    }
+
+    @Override
+    public Page<ProductDto> searchFilter(String keyword, Pageable pageable) {
+        List<Product> productList = repository.findAllByNameContaining(keyword);
+        Page<Product> products = new PageImpl<>(productList, pageable, productList.size());
+        return PageUtil.toPage(products,product -> ProductMapper.toDto(product,categoryService.getById(product.getMainCategoryId())));
     }
 
     @Override

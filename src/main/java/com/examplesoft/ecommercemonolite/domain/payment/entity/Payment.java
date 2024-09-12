@@ -22,7 +22,7 @@ public class Payment extends BaseEntity {
     private BigDecimal price;
     private String deliveryAddress;
     private String billingAddress;
-    @Column(nullable = false,unique = true)
+    @Column(nullable = false)
     private String userId;
 
 }

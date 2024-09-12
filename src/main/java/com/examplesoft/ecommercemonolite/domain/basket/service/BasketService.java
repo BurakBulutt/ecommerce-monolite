@@ -8,4 +8,6 @@ public interface BasketService {
     BasketDto addProductToBasket(AddProductRequest request);
     BasketDto changeQuantity(String basketProductId, Integer quantity);
     void clearBasket();
+
+    BasketDto deleteBasketProduct(String basketProductId);
 }

@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.*;
 public class BasketController extends BaseController {
     private final BasketService service;
 
-
     @GetMapping
     @PreAuthorize("hasAnyAuthority('basket:read','admin')")
     public Response<BasketResponse> getBasket() {
@@ -30,6 +29,12 @@ public class BasketController extends BaseController {
     @PreAuthorize("hasAnyAuthority('basket:write','admin')")
     public Response<BasketResponse> updateQuantity(@RequestBody UpdateQuantityRequest request) {
         return response(BasketMapper.toBasketResponse(service.changeQuantity(request.basketProductId(),request.quantity())));
+    }
+
+    @DeleteMapping("delete-basketProduct/{id}")
+    @PreAuthorize("hasAnyAuthority('basket:write','admin')")
+    public Response<BasketResponse> deleteBasketProduct(@PathVariable String id) {
+        return response(BasketMapper.toBasketResponse(service.deleteBasketProduct(id)));
     }
 
     @DeleteMapping
