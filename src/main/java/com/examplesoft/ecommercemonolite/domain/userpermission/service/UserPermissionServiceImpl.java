@@ -1,15 +1,20 @@
 package com.examplesoft.ecommercemonolite.domain.userpermission.service;
 
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.PermissionDto;
+import com.examplesoft.ecommercemonolite.domain.permisson.dto.UserCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.permisson.entity.Permission;
+import com.examplesoft.ecommercemonolite.domain.permisson.entity.PermissionType;
 import com.examplesoft.ecommercemonolite.domain.permisson.service.PermissionService;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;
+import com.examplesoft.ecommercemonolite.domain.user.entity.UserType;
 import com.examplesoft.ecommercemonolite.domain.user.service.UserService;
 import com.examplesoft.ecommercemonolite.domain.userpermission.dto.NewPermissionCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.userpermission.dto.UserPermissionDto;
 import com.examplesoft.ecommercemonolite.domain.userpermission.dto.UserPermissionMapper;
 import com.examplesoft.ecommercemonolite.domain.userpermission.entity.UserPermission;
 import com.examplesoft.ecommercemonolite.domain.userpermission.repo.UserPermissionRepository;
+import com.examplesoft.ecommercemonolite.util.BaseException;
+import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
@@ -36,6 +41,7 @@ public class UserPermissionServiceImpl {
                 .toList();
     }
 
+    @Transactional
     public UserPermissionDto save(UserPermissionDto dto) {
         PermissionDto permissionDto = permissionService.getById(dto.getPermission().getId());
         UserDto userDto = userService.getById(dto.getUser().getId());
@@ -44,6 +50,7 @@ public class UserPermissionServiceImpl {
     }
 
     @EventListener
+    @Transactional
     public void newPermissionEvent(NewPermissionCreationEvent event) {
         List<UserDto> allUsers = userService.getAll();
 
@@ -53,5 +60,27 @@ public class UserPermissionServiceImpl {
             userPermission.setPermissionId(event.permissionId());
             repository.save(userPermission);
         });
+    }
+
+    @EventListener
+    @Transactional
+    public void userCreationEvent(UserCreationEvent event) {
+        List<PermissionDto> permissions = permissionService.getByPermissionType(getType(event.user().getUserType()));
+
+        permissions.forEach(permissionDto -> {
+            repository.save(new UserPermission(event.user().getId(),permissionDto.getId()));
+        });
+    }
+
+    public PermissionType getType(UserType userType) {
+        switch (userType) {
+            case USER -> {
+                return PermissionType.USER;
+            }
+            case ADMIN -> {
+                return PermissionType.ADMIN;
+            }
+            default -> throw new BaseException(MessageUtil.FAIL);
+        }
     }
 }

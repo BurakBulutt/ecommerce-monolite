@@ -12,6 +12,7 @@ import com.examplesoft.ecommercemonolite.domain.order.entity.OrderStatus;
 import com.examplesoft.ecommercemonolite.domain.order.repo.OrderItemRepository;
 import com.examplesoft.ecommercemonolite.domain.order.repo.OrderRepository;
 import com.examplesoft.ecommercemonolite.domain.payment.api.PaymentSuccessEvent;
+import com.examplesoft.ecommercemonolite.domain.product.service.ProductService;
 import com.examplesoft.ecommercemonolite.domain.product.service.ProductStockUpdateEvent;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;
 import com.examplesoft.ecommercemonolite.domain.user.service.UserService;
@@ -42,13 +43,14 @@ public class OrderServiceImpl implements OrderService {
     private final OrderItemRepository orderItemRepository;
     private final BasketService basketService;
     private final UserService userService;
+    private final ProductService productService;
     private final ApplicationEventPublisher publisher;
 
     @Override
     public Page<OrderDto> getAll(Pageable pageable) {
         return PageUtil.toPage(repository.findAll(pageable), order -> {
             List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
-                    .map(OrderMapper::toItemDto)
+                    .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                     .toList();
             return OrderMapper.toDto(order, orderItems);
         });
@@ -63,10 +65,20 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto getOrderByCode(String code) {
         return repository.findByCode(code).map(order -> {
             List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
-                    .map(OrderMapper::toItemDto)
+                    .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                     .toList();
             return OrderMapper.toDto(order, orderItems);
-        }).orElseThrow(()-> new BaseException(MessageUtil.ENTITY_NOT_FOUND,Order.class.getSimpleName(), code));
+        }).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Order.class.getSimpleName(), code));
+    }
+
+    @Override
+    public Page<OrderDto> getUserOrders(Pageable pageable) {
+        return PageUtil.toPage(repository.findAllByUserId(JwtUtil.extractUserId(), pageable), order -> {
+            List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
+                    .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
+                    .toList();
+            return OrderMapper.toDto(order, orderItems);
+        });
     }
 
     @EventListener
@@ -81,7 +93,8 @@ public class OrderServiceImpl implements OrderService {
         order.setStatus(OrderStatus.SIPARIS_ALINDI);
         order.setPaymentId(event.paymentId());
         order.setUserId(user.getId());
-        order.setOrderAddress(event.deliveryAddress());
+        order.setDeliveryAddress(event.deliveryAddress());
+        order.setBillingAddress(event.billingAddress());
         order.setShipmentDate(new Date());
 
         repository.save(order);
@@ -90,7 +103,7 @@ public class OrderServiceImpl implements OrderService {
 
         basket.getBasketProducts().forEach(basketProductDto -> {
             OrderItemDto orderItemDto = OrderMapper.toItemDto
-                    (orderItemRepository.save(new OrderItem(order.getId(),basketProductDto.getProduct().getId(),basketProductDto.getQuantity(),basketProductDto.getTotalAmount())));
+                    (orderItemRepository.save(new OrderItem(order.getId(), basketProductDto.getProduct().getId(), basketProductDto.getQuantity(), basketProductDto.getTotalAmount())), productService.getById(basketProductDto.getProduct().getId()));
             orderItemDtos.add(orderItemDto);
             publisher.publishEvent(new ProductStockUpdateEvent(basketProductDto.getProduct().getId()));
         });
@@ -103,7 +116,7 @@ public class OrderServiceImpl implements OrderService {
     public OrderDto updateOrderStatus(String id, OrderStatus status) {
         Order order = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Order.class.getSimpleName(), id));
         List<OrderItemDto> orderItemDtos = orderItemRepository.findAllByOrderId(order.getId()).stream()
-                .map(OrderMapper::toItemDto)
+                .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                 .toList();
         order.setStatus(status);
         return OrderMapper.toDto(repository.save(order), orderItemDtos);
@@ -112,7 +125,7 @@ public class OrderServiceImpl implements OrderService {
     @Override
     @Transactional
     public void deleteOrder(String id) {
-        Order order = repository.findById(id).orElseThrow(()-> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Order.class.getSimpleName(), id));
+        Order order = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Order.class.getSimpleName(), id));
         List<OrderItem> orderItems = orderItemRepository.findAllByOrderId(id);
 
         repository.delete(order);

@@ -28,6 +28,12 @@ public class OrderController extends BaseController {
         return response(OrderMapper.toPageResponse(service.filter(pageable)));
     }
 
+    @GetMapping("my-orders")
+    @PreAuthorize("hasAnyAuthority('order:read','admin')")
+    public Response<PageResponse<OrderResponse>> userOrders(Pageable pageable) {
+        return response(OrderMapper.toPageResponse(service.getUserOrders(pageable)));
+    }
+
     @GetMapping("{code}")
     @PreAuthorize("hasAnyAuthority('order:read','admin')")
     public Response<OrderResponse> getByCode(@PathVariable String code) {

@@ -25,7 +25,9 @@ public class Order extends BaseEntity {
     @Column(nullable = false)
     private Date shipmentDate;
     @Column(nullable = false)
-    private String orderAddress;
+    private String billingAddress;
+    @Column(nullable = false)
+    private String deliveryAddress;
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private OrderStatus status;

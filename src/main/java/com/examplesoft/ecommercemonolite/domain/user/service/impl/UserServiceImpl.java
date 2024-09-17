@@ -1,5 +1,6 @@
 package com.examplesoft.ecommercemonolite.domain.user.service.impl;
 
+import com.examplesoft.ecommercemonolite.domain.permisson.dto.UserCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserMapper;
 import com.examplesoft.ecommercemonolite.domain.user.entity.User;
@@ -9,6 +10,7 @@ import com.examplesoft.ecommercemonolite.util.BaseException;
 import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import com.examplesoft.ecommercemonolite.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -21,6 +23,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Page<UserDto> getAll(Pageable pageable) {
@@ -50,7 +53,9 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto save(UserDto userDto) {
-        return UserMapper.toDto(repository.save(UserMapper.toEntity(new User(), userDto)));
+        UserDto user = UserMapper.toDto(repository.save(UserMapper.toEntity(new User(), userDto)));
+        publisher.publishEvent(new UserCreationEvent(user));
+        return user;
     }
 
     @Override

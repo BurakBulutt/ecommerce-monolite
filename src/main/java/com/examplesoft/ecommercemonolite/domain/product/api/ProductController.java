@@ -41,7 +41,6 @@ public class ProductController extends BaseController {
     }
 
     @GetMapping("/slug/{slug}")
-    @PreAuthorize("hasAnyAuthority('admin','product:read')")
     public Response<ProductResponse> getBySlug(@PathVariable String slug) {
         return response(ProductMapper.toResponse(service.getBySlug(slug)));
     }

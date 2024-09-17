@@ -6,6 +6,7 @@ import com.examplesoft.ecommercemonolite.domain.auth.dto.Token;
 import com.examplesoft.ecommercemonolite.domain.auth.service.AuthService;
 import com.examplesoft.ecommercemonolite.domain.basket.service.UserBasketCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.PermissionDto;
+import com.examplesoft.ecommercemonolite.domain.permisson.dto.UserCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.permisson.entity.PermissionType;
 import com.examplesoft.ecommercemonolite.domain.permisson.service.PermissionService;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;
@@ -58,15 +59,6 @@ public class AuthServiceImpl implements AuthService {
                 .isVerified(Boolean.TRUE)
                 .build());
 
-        List<PermissionDto> permissions = permissionService.getByPermissionType(PermissionType.USER);
-
-        permissions.forEach(permissionDto -> {
-            userPermissionService.save(UserPermissionDto.builder()
-                    .user(user)
-                    .permission(permissionDto)
-                    .build());
-        });
-
         publisher.publishEvent(new UserBasketCreationEvent(user.getId()));
     }
 
@@ -79,16 +71,30 @@ public class AuthServiceImpl implements AuthService {
             throw new BaseException(MessageUtil.USERNAME_OR_PASSWORD_WRONG);
         }
 
+        List<PermissionDto> permissions = permissionService.getByPermissionType(getType(userType));
+
         Set<String> userPermissionIds = userPermissionService.getAllByUserId(userDetails.getId()).stream()
                 .map(up -> up.getPermission().getId())
                 .collect(Collectors.toSet());
 
-        List<PermissionDto> permissions = permissionService.getPermissionByIdIn(userPermissionIds);
+        permissions = permissions.stream().filter(permissionDto -> userPermissionIds.contains(permissionDto.getId())).toList();
 
         List<SimpleGrantedAuthority> authorities = permissions.stream()
                 .map(permissionDto -> new SimpleGrantedAuthority(permissionDto.getName()))
                 .toList();
 
         return new Token(jwtUtil.generateToken(userDetails, authorities));
+    }
+
+    public PermissionType getType(UserType userType) {
+        switch (userType) {
+            case USER -> {
+                return PermissionType.USER;
+            }
+            case ADMIN -> {
+                return PermissionType.ADMIN;
+            }
+            default -> throw new BaseException(MessageUtil.FAIL);
+        }
     }
 }

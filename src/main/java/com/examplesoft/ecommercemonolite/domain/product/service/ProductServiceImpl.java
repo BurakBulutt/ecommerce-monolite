@@ -20,7 +20,9 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 
 @Service
@@ -49,7 +51,7 @@ public class ProductServiceImpl implements ProductService {
             getProductsFromCategory(categoryTreeDto, allProducts);
         }
 
-        if (categorySlug == null || allProducts.isEmpty()) {
+        if (categorySlug == null) {
             allProducts.addAll(repository.findAll());
         }
 
@@ -65,11 +67,11 @@ public class ProductServiceImpl implements ProductService {
         return new PageImpl<>(productDtos, pageable, allProducts.size());
     }
 
-    private void getProductsFromCategory(CategoryTreeDto dto,List<Product> productList){
-        productList.addAll(repository.findAllByMainCategoryId(dto.getId()));
+    private void getProductsFromCategory(CategoryTreeDto dto,List<Product> allProducts) {
+        allProducts.addAll(repository.findAllByMainCategoryId(dto.getId()));
 
         dto.getChildrensList().forEach(child -> {
-            getProductsFromCategory(child,productList);
+            getProductsFromCategory(child,allProducts);
         });
     }
 

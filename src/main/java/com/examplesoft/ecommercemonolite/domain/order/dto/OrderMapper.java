@@ -2,6 +2,7 @@ package com.examplesoft.ecommercemonolite.domain.order.dto;
 
 import com.examplesoft.ecommercemonolite.domain.order.entity.Order;
 import com.examplesoft.ecommercemonolite.domain.order.entity.OrderItem;
+import com.examplesoft.ecommercemonolite.domain.product.dto.ProductDto;
 import lombok.AccessLevel;
 import lombok.NoArgsConstructor;
 
@@ -18,18 +19,20 @@ public class OrderMapper {
                 .shipmentDate(entity.getShipmentDate())
                 .status(entity.getStatus())
                 .paymentId(entity.getPaymentId())
-                .orderAddress(entity.getOrderAddress())
+                .billingAddress(entity.getBillingAddress())
+                .deliveryAddress(entity.getDeliveryAddress())
                 .orderItems(orderItems)
                 .code(entity.getCode())
                 .build();
     }
 
-    public static OrderItemDto toItemDto(OrderItem entity) {
+    public static OrderItemDto toItemDto(OrderItem entity, ProductDto productDto) {
         return OrderItemDto.builder()
                 .id(entity.getId())
                 .quantity(entity.getQuantity())
-                .productId(entity.getProductId())
+                .product(productDto)
                 .totalAmount(entity.getTotalAmount())
+                .orderId(entity.getOrderId())
                 .build();
     }
 
@@ -38,7 +41,8 @@ public class OrderMapper {
         entity.setShipmentDate(dto.getShipmentDate());
         entity.setStatus(dto.getStatus());
         entity.setPaymentId(dto.getPaymentId());
-        entity.setOrderAddress(dto.getOrderAddress());
+        entity.setBillingAddress(dto.getBillingAddress());
+        entity.setDeliveryAddress(dto.getDeliveryAddress());
         entity.setAmount(dto.getAmount());
         entity.setCode(dto.getCode());
 

@@ -145,6 +145,7 @@ public class BasketServiceImpl implements BasketService {
     }
 
     @EventListener
+    @Transactional
     public void createBasketForUserEvent(UserBasketCreationEvent event) {
         basketRepository.save(new Basket(event.userId(), BigDecimal.ZERO));
     }

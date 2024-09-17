@@ -15,7 +15,8 @@ public class OrderDto {
     private String userId;
     private BigDecimal amount;
     private Date shipmentDate;
-    private String orderAddress;
+    private String billingAddress;
+    private String deliveryAddress;
     private OrderStatus status;
     private String paymentId;
     private List<OrderItemDto> orderItems;
