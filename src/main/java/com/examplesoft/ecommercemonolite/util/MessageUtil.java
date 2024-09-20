@@ -12,7 +12,9 @@ public enum MessageUtil {
     USERNAME_OR_PASSWORD_WRONG(1002,"general.usernameOrPasswordWrong"),
     BASKET_NOT_FOUND(1003,"general.basketNotFound"),
     BASKET_EMPTY(1004,"general.basketEmpty"),
-    NO_STOCK_PRODUCT(1005,"general.noStockProduct"),;
+    NO_STOCK_PRODUCT(1005,"general.noStockProduct"),
+    MAIL_SENDING_IS_FAIL(1006,"general.mailDidNotSend"),
+    SUBSCRIPTION_NOT_FOUND(1007,"general.subscriptionNotFound");
 
     private final int code;
     private final String message;

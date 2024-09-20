@@ -46,6 +46,7 @@ public class BasketServiceImpl implements BasketService {
                                 return toBasketProductDto(basket, basketProduct);
                             }
                     )
+                    .filter(basketProductDto -> basketProductDto.getProduct().getQuantity() > 0)
                     .toList();
             basket.setTotalAmount(amount.get());
             return toDto(basketRepository.save(basket), basketProducts);
@@ -69,7 +70,7 @@ public class BasketServiceImpl implements BasketService {
         final BasketProduct bProduct;
 
         if (basketProduct == null) {
-            BigDecimal amount = product.getPrice().multiply(new BigDecimal(request.quantity()));
+            BigDecimal amount = product.getPriceAfterDiscount().multiply(new BigDecimal(request.quantity()));
             bProduct = new BasketProduct(basket.getId(), product.getId(), request.quantity(), amount);
             basketProductRepository.save(bProduct);
         } else {
@@ -82,7 +83,7 @@ public class BasketServiceImpl implements BasketService {
             }
 
             bProduct.setQuantity(newQuantity);
-            bProduct.setTotalAmount(new BigDecimal(newQuantity).multiply(product.getPrice()));
+            bProduct.setTotalAmount(new BigDecimal(newQuantity).multiply(product.getPriceAfterDiscount()));
             basketProductRepository.save(bProduct);
         }
 
@@ -103,7 +104,7 @@ public class BasketServiceImpl implements BasketService {
             basketProductRepository.delete(basketProduct);
         } else {
             basketProduct.setQuantity(quantity);
-            basketProduct.setTotalAmount(new BigDecimal(quantity).multiply(product.getPrice()));
+            basketProduct.setTotalAmount(new BigDecimal(quantity).multiply(product.getPriceAfterDiscount()));
             basketProductRepository.save(basketProduct);
         }
 
