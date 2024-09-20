@@ -1,4 +1,4 @@
-package com.examplesoft.ecommercemonolite.domain.campaign.dto;
+package com.examplesoft.ecommercemonolite.domain.favoriteproduct.dto;
 
 public record FavoriteProductCampaignEvent(
         String url,

@@ -11,7 +11,6 @@ import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import com.examplesoft.ecommercemonolite.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;

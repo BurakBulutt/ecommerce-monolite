@@ -62,7 +62,7 @@ public class SubscriptionServiceImpl {
         BouncyCastleProviderHelp.enableBouncyCastleProvider();
         try {
             PushService pushService = new PushService();
-            pushService.setPublicKey(Utils.loadPublicKey(PUBLIC_VAPID_KEY)); //TODO HATA SATIRI
+            pushService.setPublicKey(Utils.loadPublicKey(PUBLIC_VAPID_KEY));
             pushService.setPrivateKey(Utils.loadPrivateKey(PRIVATE_VAPID_KEY));
 
             Notification notification = new Notification(

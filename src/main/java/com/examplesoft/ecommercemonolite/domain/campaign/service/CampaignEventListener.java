@@ -1,8 +1,7 @@
 package com.examplesoft.ecommercemonolite.domain.campaign.service;
 
-import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignDto;
 import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignSaveEvent;
-import com.examplesoft.ecommercemonolite.domain.campaign.dto.FavoriteProductCampaignEvent;
+import com.examplesoft.ecommercemonolite.domain.favoriteproduct.dto.FavoriteProductCampaignEvent;
 import com.examplesoft.ecommercemonolite.domain.favoriteproduct.dto.FavoriteProductDto;
 import com.examplesoft.ecommercemonolite.domain.favoriteproduct.service.FavoriteProductService;
 import com.examplesoft.ecommercemonolite.domain.product.dto.ProductDto;
@@ -16,7 +15,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.context.event.EventListener;
-import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.List;
@@ -26,14 +24,13 @@ import java.util.stream.Collectors;
 @Component
 @RequiredArgsConstructor
 @Slf4j
-public class FavoriteProductCampaignEventListener {
+public class CampaignEventListener {
     @Value("${client.domain}")
     private String domain;
 
     private final ApplicationEventPublisher publisher;
     private final UserService userService;
     private final ProductService productService;
-    private final CampaignService campaignService;
     private final FavoriteProductService favoriteProductService;
     private final SubscriptionServiceImpl subscriptionService;
 

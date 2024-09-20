@@ -1,6 +1,6 @@
 package com.examplesoft.ecommercemonolite.mailsender.service;
 
-import com.examplesoft.ecommercemonolite.domain.campaign.dto.FavoriteProductCampaignEvent;
+import com.examplesoft.ecommercemonolite.domain.favoriteproduct.dto.FavoriteProductCampaignEvent;
 import com.examplesoft.ecommercemonolite.mailsender.dto.MailDto;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.event.EventListener;
