@@ -9,6 +9,6 @@ import java.util.List;
 import java.util.Set;
 
 public interface CampaignRepository extends JpaRepository<Campaign, String> {
-    @Query("SELECT c FROM Campaign c JOIN c.targets t WHERE t IN :targets")
-    List<Campaign> findAllByTargets(@Param("targets") Set<String> targets);
+    @Query("SELECT c FROM Campaign c JOIN c.targets t WHERE t IN :targets AND c.isActive=TRUE")
+    List<Campaign> findAllByTargetsAndIsActiveTrue(@Param("targets") Set<String> targets);
 }

@@ -5,8 +5,10 @@ import com.examplesoft.ecommercemonolite.domain.campaign.service.CampaignService
 import com.examplesoft.ecommercemonolite.domain.category.dto.CategoryDto;
 import com.examplesoft.ecommercemonolite.domain.category.dto.CategoryTreeDto;
 import com.examplesoft.ecommercemonolite.domain.category.service.CategoryServiceImpl;
+import com.examplesoft.ecommercemonolite.domain.product.dto.CategoryDeleteEvent;
 import com.examplesoft.ecommercemonolite.domain.product.dto.ProductDto;
 import com.examplesoft.ecommercemonolite.domain.product.dto.ProductMapper;
+import com.examplesoft.ecommercemonolite.domain.product.dto.ProductStockUpdateEvent;
 import com.examplesoft.ecommercemonolite.domain.product.entity.Product;
 import com.examplesoft.ecommercemonolite.domain.product.repo.ProductRepository;
 import com.examplesoft.ecommercemonolite.util.BaseException;
@@ -110,8 +112,7 @@ public class ProductServiceImpl implements ProductService {
 
     @Override
     public Page<ProductDto> searchFilter(String keyword, Pageable pageable) {
-        List<Product> productList = repository.findAllByNameContaining(keyword);
-        Page<Product> products = new PageImpl<>(productList, pageable, productList.size());
+        Page<Product> products = repository.findAllByNameContaining(keyword, pageable);
         return PageUtil.toPage(products, product -> {
             CategoryDto mainCategory = categoryService.getById(product.getMainCategoryId());
             List<CampaignDto> campaigns = campaignService.getAllByTargets(getTargets(product, mainCategory));
@@ -163,6 +164,14 @@ public class ProductServiceImpl implements ProductService {
             throw new BaseException(MessageUtil.FAIL);
         }
         repository.delete(product);
+    }
+
+    @EventListener
+    public void categoryDeleteCheckEvent(CategoryDeleteEvent event){
+        List<Product> products = repository.findAllByMainCategoryId(event.categoryId());
+        if (!products.isEmpty()){
+            throw new BaseException(MessageUtil.FAIL);
+        }
     }
 
     @EventListener

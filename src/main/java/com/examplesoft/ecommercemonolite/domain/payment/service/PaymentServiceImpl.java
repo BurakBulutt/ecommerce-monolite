@@ -12,9 +12,12 @@ import com.examplesoft.ecommercemonolite.domain.user.service.UserService;
 import com.examplesoft.ecommercemonolite.security.JwtUtil;
 import com.examplesoft.ecommercemonolite.util.BaseException;
 import com.examplesoft.ecommercemonolite.util.MessageUtil;
+import com.examplesoft.ecommercemonolite.util.PageUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -28,6 +31,19 @@ public class PaymentServiceImpl {
     private final ApplicationEventPublisher publisher;
     private final ProductService productService;
 
+    public Page<PaymentDto> getAll(Pageable pageable) {
+        return PageUtil.toPage(repository.findAll(pageable),payment -> {
+            UserDto user = userService.getById(payment.getUserId());
+            return toDto(payment,user);
+        });
+    }
+
+    public PaymentDto getById(String id) {
+        return repository.findById(id).map(payment -> {
+            UserDto user = userService.getById(payment.getUserId());
+            return toDto(payment,user);
+        }).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND,Payment.class.getSimpleName(),id));
+    }
 
     @Transactional
     public void createPayment(PaymentDto payment) {
@@ -48,8 +64,9 @@ public class PaymentServiceImpl {
         payment.setUser(user);
 
         Payment p = repository.save(toEntity(new Payment(), payment));
+        PaymentDto paymentDto = toDto(p,user);
 
-        publisher.publishEvent(new PaymentSuccessEvent(p.getId(),p.getDeliveryAddress(),p.getBillingAddress()));
+        publisher.publishEvent(new PaymentSuccessEvent(paymentDto));
     }
 
 

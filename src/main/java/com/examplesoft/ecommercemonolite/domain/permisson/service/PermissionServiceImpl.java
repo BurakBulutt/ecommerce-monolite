@@ -2,18 +2,14 @@ package com.examplesoft.ecommercemonolite.domain.permisson.service;
 
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.PermissionDto;
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.PermissionMapper;
-import com.examplesoft.ecommercemonolite.domain.permisson.dto.UserCreationEvent;
 import com.examplesoft.ecommercemonolite.domain.permisson.entity.Permission;
 import com.examplesoft.ecommercemonolite.domain.permisson.entity.PermissionType;
 import com.examplesoft.ecommercemonolite.domain.permisson.repo.PermissionRepository;
-import com.examplesoft.ecommercemonolite.domain.user.entity.UserType;
 import com.examplesoft.ecommercemonolite.domain.userpermission.dto.NewPermissionCreationEvent;
-import com.examplesoft.ecommercemonolite.domain.userpermission.dto.UserPermissionDto;
 import com.examplesoft.ecommercemonolite.util.BaseException;
 import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
-import org.springframework.context.event.EventListener;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 

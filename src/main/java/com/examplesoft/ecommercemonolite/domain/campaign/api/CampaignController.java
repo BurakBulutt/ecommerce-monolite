@@ -27,6 +27,13 @@ public class CampaignController extends BaseController {
         return response(CampaignMapper.toResponse(service.getById(id)));
     }
 
+    @GetMapping("/campaign-notify/{id}")
+    @PreAuthorize("hasAnyAuthority('admin')")
+    public Response<Void> campaignNotify(@PathVariable String id) {
+        service.campaignNotify(id);
+        return success();
+    }
+
     @PostMapping
     @PreAuthorize("hasAnyAuthority('admin')")
     public Response<CampaignResponse> save(@RequestBody CampaignRequest request) {

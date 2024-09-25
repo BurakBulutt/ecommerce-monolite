@@ -24,4 +24,5 @@ public class CampaignResponse {
     private Double discount;
     private Set<String> targets;
     private Integer priority;
+    private Boolean isActive;
 }

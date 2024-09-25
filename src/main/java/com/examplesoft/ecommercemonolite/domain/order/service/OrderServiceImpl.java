@@ -12,8 +12,10 @@ import com.examplesoft.ecommercemonolite.domain.order.entity.OrderStatus;
 import com.examplesoft.ecommercemonolite.domain.order.repo.OrderItemRepository;
 import com.examplesoft.ecommercemonolite.domain.order.repo.OrderRepository;
 import com.examplesoft.ecommercemonolite.domain.payment.api.PaymentSuccessEvent;
+import com.examplesoft.ecommercemonolite.domain.payment.dto.PaymentDto;
+import com.examplesoft.ecommercemonolite.domain.payment.service.PaymentServiceImpl;
 import com.examplesoft.ecommercemonolite.domain.product.service.ProductService;
-import com.examplesoft.ecommercemonolite.domain.product.service.ProductStockUpdateEvent;
+import com.examplesoft.ecommercemonolite.domain.product.dto.ProductStockUpdateEvent;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;
 import com.examplesoft.ecommercemonolite.domain.user.service.UserService;
 import com.examplesoft.ecommercemonolite.security.JwtUtil;
@@ -45,6 +47,7 @@ public class OrderServiceImpl implements OrderService {
     private final UserService userService;
     private final ProductService productService;
     private final ApplicationEventPublisher publisher;
+    private final PaymentServiceImpl paymentService;
 
     @Override
     public Page<OrderDto> getAll(Pageable pageable) {
@@ -52,7 +55,9 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
                     .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                     .toList();
-            return OrderMapper.toDto(order, orderItems);
+            PaymentDto payment = paymentService.getById(order.getPaymentId());
+            UserDto user = userService.getById(payment.getUser().getId());
+            return OrderMapper.toDto(order,user,payment,orderItems);
         });
     }
 
@@ -67,7 +72,9 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
                     .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                     .toList();
-            return OrderMapper.toDto(order, orderItems);
+            PaymentDto payment = paymentService.getById(order.getPaymentId());
+            UserDto user = userService.getById(payment.getUser().getId());
+            return OrderMapper.toDto(order, user,payment,orderItems);
         }).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Order.class.getSimpleName(), code));
     }
 
@@ -77,7 +84,9 @@ public class OrderServiceImpl implements OrderService {
             List<OrderItemDto> orderItems = orderItemRepository.findAllByOrderId(order.getId()).stream()
                     .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                     .toList();
-            return OrderMapper.toDto(order, orderItems);
+            PaymentDto payment = paymentService.getById(order.getPaymentId());
+            UserDto user = userService.getById(payment.getUser().getId());
+            return OrderMapper.toDto(order,user,payment, orderItems);
         });
     }
 
@@ -91,10 +100,10 @@ public class OrderServiceImpl implements OrderService {
         order.setCode(UUID.randomUUID().toString());
         order.setAmount(basket.getTotalAmount());
         order.setStatus(OrderStatus.SIPARIS_ALINDI);
-        order.setPaymentId(event.paymentId());
+        order.setPaymentId(event.payment().getId());
         order.setUserId(user.getId());
-        order.setDeliveryAddress(event.deliveryAddress());
-        order.setBillingAddress(event.billingAddress());
+        order.setDeliveryAddress(event.payment().getDeliveryAddress());
+        order.setBillingAddress(event.payment().getBillingAddress());
         order.setShipmentDate(new Date());
 
         repository.save(order);
@@ -108,7 +117,7 @@ public class OrderServiceImpl implements OrderService {
             publisher.publishEvent(new ProductStockUpdateEvent(basketProductDto.getProduct().getId()));
         });
         publisher.publishEvent(new ClearBasketEvent(basket.getId()));
-        return OrderMapper.toDto(order, orderItemDtos);
+        return OrderMapper.toDto(order,user,event.payment(),orderItemDtos);
     }
 
     @Override
@@ -118,8 +127,10 @@ public class OrderServiceImpl implements OrderService {
         List<OrderItemDto> orderItemDtos = orderItemRepository.findAllByOrderId(order.getId()).stream()
                 .map(orderItem -> OrderMapper.toItemDto(orderItem, productService.getById(orderItem.getProductId())))
                 .toList();
+        PaymentDto payment = paymentService.getById(order.getPaymentId());
+        UserDto user = userService.getById(payment.getUser().getId());
         order.setStatus(status);
-        return OrderMapper.toDto(repository.save(order), orderItemDtos);
+        return OrderMapper.toDto(repository.save(order),user,payment,orderItemDtos);
     }
 
     @Override

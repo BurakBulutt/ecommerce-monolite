@@ -6,7 +6,7 @@ public record ProductRequest(
         String code,
         String name,
         String description,
-        BigDecimal price,
+        BigDecimal originalPrice,
         Integer quantity,
         String slug,
         String image,

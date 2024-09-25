@@ -19,6 +19,7 @@ public class UserMapper {
                 .password(request.getPassword())
                 .isVerified(request.getIsVerified())
                 .isActive(request.getIsActive())
+                .userType(request.getUserType())
                 .build();
     }
 

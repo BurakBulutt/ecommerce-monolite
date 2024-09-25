@@ -14,7 +14,7 @@ public class ProductMapper {
         return ProductDto.builder()
                 .name(request.name())
                 .description(request.description())
-                .originalPrice(request.price())
+                .originalPrice(request.originalPrice())
                 .code(request.code())
                 .slug(request.slug())
                 .image(request.image())

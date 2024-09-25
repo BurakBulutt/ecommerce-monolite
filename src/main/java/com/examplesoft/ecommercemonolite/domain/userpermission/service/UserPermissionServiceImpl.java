@@ -2,7 +2,6 @@ package com.examplesoft.ecommercemonolite.domain.userpermission.service;
 
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.PermissionDto;
 import com.examplesoft.ecommercemonolite.domain.permisson.dto.UserCreationEvent;
-import com.examplesoft.ecommercemonolite.domain.permisson.entity.Permission;
 import com.examplesoft.ecommercemonolite.domain.permisson.entity.PermissionType;
 import com.examplesoft.ecommercemonolite.domain.permisson.service.PermissionService;
 import com.examplesoft.ecommercemonolite.domain.user.dto.UserDto;

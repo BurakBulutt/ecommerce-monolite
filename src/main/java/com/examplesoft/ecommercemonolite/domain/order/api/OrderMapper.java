@@ -17,10 +17,10 @@ public class OrderMapper {
                 .billingAddress(dto.getBillingAddress())
                 .deliveryAddress(dto.getDeliveryAddress())
                 .amount(dto.getAmount())
-                .paymentId(dto.getPaymentId())
+                .payment(dto.getPayment())
                 .shipmentDate(dto.getShipmentDate())
                 .status(dto.getStatus())
-                .userId(dto.getUserId())
+                .user(dto.getUser())
                 .build();
     }
 

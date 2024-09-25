@@ -16,6 +16,7 @@ public class ProductController extends BaseController {
     private final ProductService service;
 
     @GetMapping
+    @PreAuthorize("hasAnyAuthority('admin','product:read')")
     public Response<PageResponse<ProductResponse>> getAll(Pageable pageable) {
         return response(ProductMapper.toPageResponse(service.getAll(pageable)));
     }
@@ -28,7 +29,6 @@ public class ProductController extends BaseController {
     }
 
     @GetMapping("search-filter")
-    @PreAuthorize("hasAnyAuthority('admin','product:read')")
     public Response<PageResponse<ProductResponse>> searchFilter(@RequestParam(value = "key", required = false) String keyword,
                                                                 Pageable pageable) {
         return response(ProductMapper.toPageResponse(service.searchFilter(keyword, pageable)));

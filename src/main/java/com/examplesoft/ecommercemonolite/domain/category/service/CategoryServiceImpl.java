@@ -5,10 +5,12 @@ import com.examplesoft.ecommercemonolite.domain.category.dto.CategoryMapper;
 import com.examplesoft.ecommercemonolite.domain.category.dto.CategoryTreeDto;
 import com.examplesoft.ecommercemonolite.domain.category.entity.Category;
 import com.examplesoft.ecommercemonolite.domain.category.repo.CategoryRepository;
+import com.examplesoft.ecommercemonolite.domain.product.dto.CategoryDeleteEvent;
 import com.examplesoft.ecommercemonolite.util.BaseException;
 import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import com.examplesoft.ecommercemonolite.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -22,6 +24,7 @@ import java.util.List;
 @Transactional(readOnly = true)
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
+    private final ApplicationEventPublisher publisher;
 
     @Override
     public Page<CategoryDto> getAll(Pageable pageable) {
@@ -67,6 +70,7 @@ public class CategoryServiceImpl implements CategoryService {
     @Transactional
     public void delete(String id) {
         Category category = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Category.class.getSimpleName(), id));
+        publisher.publishEvent(new CategoryDeleteEvent(category.getId()));
         repository.delete(category);
     }
 

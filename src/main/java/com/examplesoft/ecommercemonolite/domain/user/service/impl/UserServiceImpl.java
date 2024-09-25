@@ -13,8 +13,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 
@@ -24,6 +26,7 @@ import java.util.List;
 public class UserServiceImpl implements UserService {
     private final UserRepository repository;
     private final ApplicationEventPublisher publisher;
+    private final PasswordEncoder encoder;
 
     @Override
     public Page<UserDto> getAll(Pageable pageable) {
@@ -53,6 +56,7 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public UserDto save(UserDto userDto) {
+        userDto.setPassword(encoder.encode(userDto.getPassword()));
         UserDto user = UserMapper.toDto(repository.save(UserMapper.toEntity(new User(), userDto)));
         publisher.publishEvent(new UserCreationEvent(user));
         return user;

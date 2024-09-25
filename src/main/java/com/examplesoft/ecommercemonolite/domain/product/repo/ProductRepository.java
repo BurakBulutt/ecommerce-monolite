@@ -15,18 +15,7 @@ public interface ProductRepository extends JpaRepository<Product, String> {
 
     List<Product> findAllByMainCategoryId(String mainCategoryId);
 
-    @Query(value = """
-            SELECT p FROM Product p
-            LEFT JOIN Category c on c.id = p.mainCategoryId
-            """,
-    countQuery = """
-            SELECT count(p) FROM Product p
-            LEFT JOIN Category c on c.id = p.mainCategoryId
-            """)
-    Page<Product> productFilter(@Param("categoryId") String categoryId,
-                                Pageable pageable);
-
-    List<Product> findAllByNameContaining(String name);
-
+    @Query("SELECT p FROM Product p WHERE LOWER(p.name) LIKE LOWER(CONCAT('%', :name, '%'))")
+    Page<Product> findAllByNameContaining(String name,Pageable pageable);
 
 }

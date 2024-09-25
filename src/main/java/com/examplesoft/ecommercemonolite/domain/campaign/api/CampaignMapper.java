@@ -20,6 +20,7 @@ public class CampaignMapper {
                 .expirationDate(request.expirationDate())
                 .targets(request.targets())
                 .priority(request.priority())
+                .isActive(request.isActive())
                 .build();
     }
 
@@ -34,6 +35,7 @@ public class CampaignMapper {
                 .expirationDate(dto.getExpirationDate())
                 .targets(dto.getTargets())
                 .priority(dto.getPriority())
+                .isActive(dto.getIsActive())
                 .build();
     }
 

@@ -2,7 +2,7 @@ package com.examplesoft.ecommercemonolite.domain.campaign.service;
 
 import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignDto;
 import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignMapper;
-import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignSaveEvent;
+import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignNotifyEvent;
 import com.examplesoft.ecommercemonolite.domain.campaign.entity.Campaign;
 import com.examplesoft.ecommercemonolite.domain.campaign.entity.CampaignScope;
 import com.examplesoft.ecommercemonolite.domain.campaign.repo.CampaignRepository;
@@ -33,23 +33,23 @@ public class CampaignServiceImpl implements CampaignService {
 
     @Override
     public List<CampaignDto> getAllByTargets(Set<String> targets) {
-        return repository.findAllByTargets(targets).stream()
+        return repository.findAllByTargetsAndIsActiveTrue(targets).stream()
                 .map(CampaignMapper::toDto)
                 .toList();
     }
 
     @Override
     public CampaignDto getById(String id) {
-        return repository.findById(id).map(CampaignMapper::toDto).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(),id));
+        return repository.findById(id).map(CampaignMapper::toDto).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(), id));
     }
 
     @Override
     @Transactional
     public CampaignDto save(CampaignDto campaignDto) {
-        CampaignDto campaign = CampaignMapper.toDto(repository.save(CampaignMapper.toEntity(new Campaign(),campaignDto)));
+        CampaignDto campaign = CampaignMapper.toDto(repository.save(CampaignMapper.toEntity(new Campaign(), campaignDto)));
 
         if (campaignDto.getCampaignScope() == CampaignScope.PRODUCT) {
-            publisher.publishEvent(new CampaignSaveEvent(campaign.getTargets()));
+            publisher.publishEvent(new CampaignNotifyEvent(campaign.getTargets()));
         }
         return campaign;
     }
@@ -57,14 +57,24 @@ public class CampaignServiceImpl implements CampaignService {
     @Override
     @Transactional
     public CampaignDto update(String id, CampaignDto campaignDto) {
-        Campaign campaign = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(),id));
-        return CampaignMapper.toDto(repository.save(CampaignMapper.toEntity(campaign,campaignDto)));
+        Campaign campaign = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(), id));
+        return CampaignMapper.toDto(repository.save(CampaignMapper.toEntity(campaign, campaignDto)));
     }
 
     @Override
     @Transactional
     public void delete(String id) {
-        Campaign campaign = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(),id));
+        Campaign campaign = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(), id));
         repository.delete(campaign);
+    }
+
+    @Override
+    @Transactional
+    public void campaignNotify(String id){
+        Campaign campaign = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Campaign.class.getSimpleName(), id));
+        if (!campaign.getIsActive()){
+            throw new BaseException(MessageUtil.FAIL);
+        }
+        publisher.publishEvent(new CampaignNotifyEvent(campaign.getTargets()));
     }
 }

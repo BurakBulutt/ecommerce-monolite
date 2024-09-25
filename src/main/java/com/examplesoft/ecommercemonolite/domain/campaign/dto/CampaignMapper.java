@@ -17,6 +17,8 @@ public class CampaignMapper {
                 .discount(entity.getDiscount())
                 .targets(entity.getTargets())
                 .priority(entity.getPriority())
+                .isActive(entity.getIsActive())
+                .expirationDate(entity.getExpirationDate())
                 .build();
     }
 
@@ -29,6 +31,7 @@ public class CampaignMapper {
         entity.setDiscount(dto.getDiscount());
         entity.setTargets(dto.getTargets());
         entity.setPriority(dto.getPriority());
+        entity.setIsActive(dto.getIsActive());
 
         return entity;
     }

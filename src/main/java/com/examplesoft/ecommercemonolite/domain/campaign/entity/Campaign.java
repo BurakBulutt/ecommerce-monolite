@@ -32,4 +32,5 @@ public class Campaign extends BaseEntity {
     @ElementCollection(fetch = FetchType.EAGER)
     private Set<String> targets;
     private Integer priority;
+    private Boolean isActive;
 }

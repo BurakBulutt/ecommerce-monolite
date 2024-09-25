@@ -14,4 +14,6 @@ public interface CampaignService {
     CampaignDto save(CampaignDto campaignDto);
     CampaignDto update(String id,CampaignDto campaignDto);
     void delete(String id);
+
+    void campaignNotify(String id);
 }

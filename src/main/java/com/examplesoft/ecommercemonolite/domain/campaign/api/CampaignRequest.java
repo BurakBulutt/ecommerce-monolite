@@ -14,6 +14,7 @@ public record CampaignRequest(
         Date expirationDate,
         Set<String> targets,
         Double discount,
-        Integer priority
+        Integer priority,
+        Boolean isActive
 ) {
 }

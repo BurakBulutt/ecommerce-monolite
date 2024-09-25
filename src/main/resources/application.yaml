@@ -16,20 +16,19 @@ spring:
     url: ${DB_URL}
   data:
     mongodb:
-      uri: mongodb+srv://lotheas:12345@mycluster.0br3d.mongodb.net/ecommerce_monolite?retryWrites=true&w=majority&appName=MyCluster&socketTimeoutMS=30000
+      uri: ${MONGO_ATLAS_URI}
 server:
   port: 8080
 jwt :
-  secret : 6FS78AF678SDGY7DBOTJN3278342SHFJKEHF347SFNJS839RWJIOFHER
+  secret : ${JWT_SECRET}
 client :
-  domain : http://localhost:3000
+  domain : ${CLIENT_DOMAIN}
+  panel :
+    domain : ${CLIENT_PANEL_DOMAIN}
 mailSender :
-  username : lotheas01@gmail.com
-  password : ursj ylzy hfob jepj
-  from : lotheas01@gmail.com
+  username : ${SMTP_USERNAME}
+  password : ${SMTP_PASSWORD}
+  from : ${SMTP_FROM}
 
-vapid :
-  public : BOC6RKLKF8GV5MfICcLe95el6HXoIV9fBpFONpai6a3n0mK8WvFfQB2qexcsLOP-XV_PtCj5ocjvwQUGiA_Y7AY
-  private : 6M6doo_HjMp4vVEB0DWOEiYnezefZJX0Lv2VfV370dM
 
 
