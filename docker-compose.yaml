@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgres:
+    image: postgres:latest
+    container_name: ecommerce-db
+    environment:
+      POSTGRES_DB: db_ecommerce_monolite
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    networks:
+      - ecommerce-network
+    ports:
+      - "5432:5432"
+
+  ecommerce:
+    image: ecommerce-monolite
+    container_name: ecommerce-project
+    environment:
+      DB_URL: "jdbc:postgresql://ecommerce-db:5432/db_ecommerce_monolite"
+      DB_USERNAME: "postgres"
+      DB_PASSWORD: "postgres"
+      MONGO_ATLAS_URI: ""
+      JWT_SECRET: "6FS78AF678SDGY7DBOTJN3278342SHFJKEHF347SFNJS839RWJIOFHER"
+      CLIENT_DOMAIN: "http://localhost:3000"
+      CLIENT_PANEL_DOMAIN: "http://localhost:3001"
+      SMTP_USERNAME: ""
+      SMTP_PASSWORD: ""
+      SMTP_FROM: ""
+    networks:
+      - ecommerce-network
+    ports:
+      - "8080:8080"
+
+networks:
+  ecommerce-network:
+    driver: bridge
