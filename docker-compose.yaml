@@ -16,7 +16,7 @@ services:
       - "5432:5432"
 
   ecommerce:
-    image: ecommerce
+    image: ecommerce:dev
     container_name: ecommerce-project
     env_file:
       - secret.env
@@ -25,7 +25,7 @@ services:
     networks:
       - ecommerce-network
     ports:
-      - "8080:8080"
+      - "8090:8090"
 
 networks:
   ecommerce-network:
