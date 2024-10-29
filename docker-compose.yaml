@@ -4,10 +4,8 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: ecommerce-db
-    environment:
-      POSTGRES_DB: db_ecommerce_monolite
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - secret.env
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
@@ -20,8 +18,6 @@ services:
     container_name: ecommerce-project
     env_file:
       - secret.env
-    environment:
-      DB_URL: "jdbc:postgresql://ecommerce-db:5432/db_ecommerce_monolite"
     networks:
       - ecommerce-network
     ports:
