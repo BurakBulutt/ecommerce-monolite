@@ -18,7 +18,7 @@ public class RedisConfig {
     public RedisCacheConfiguration cacheConfiguration() {
         return RedisCacheConfiguration
                 .defaultCacheConfig()
-                .entryTtl(Duration.ofMinutes(30))
+                .entryTtl(Duration.ofMinutes(10))
                 .disableCachingNullValues()
                 .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                 .serializeValuesWith(RedisSerializationContext.SerializationPair
@@ -33,12 +33,12 @@ public class RedisConfig {
 
             var categoryCache = RedisCacheConfiguration
                     .defaultCacheConfig()
-                    .entryTtl(Duration.ofMinutes(1))
+                    .entryTtl(Duration.ofMinutes(5))
                     .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                     .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer()));
             var userCache = RedisCacheConfiguration
                     .defaultCacheConfig()
-                    .entryTtl(Duration.ofMinutes(1))
+                    .entryTtl(Duration.ofMinutes(10))
                     .serializeKeysWith(RedisSerializationContext.SerializationPair.fromSerializer(new StringRedisSerializer()))
                     .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer()));
 

@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(request.name())
                 .surname(request.surname())
                 .username(request.username())
-                .password(encoder.encode(request.password()))
+                .password(request.password())
                 .userType(UserType.USER)
                 .isActive(Boolean.TRUE)
                 .isVerified(Boolean.TRUE)
