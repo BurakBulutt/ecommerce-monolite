@@ -14,6 +14,6 @@ public class PageUtil {
 
     public static <T,R> Page<R> toPage(Page<T> page, Function<? super T, ? extends R> mapper) {
         List<R> list = page.stream().map(mapper).collect(Collectors.toList());
-        return new PageImpl<>(list, page.getPageable(), page.getTotalElements());
+        return new PageImplUtil<>(list, page.getPageable(), page.getTotalElements());
     }
 }

@@ -6,6 +6,7 @@ import com.examplesoft.ecommercemonolite.util.BaseEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
+import lombok.NoArgsConstructor;
 import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @EqualsAndHashCode(callSuper = true)
@@ -13,6 +14,7 @@ import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 @Entity
 @Table(name = User.TABLE)
 @Data
+@NoArgsConstructor
 public class User extends BaseEntity {
     public static final String TABLE = "users";
 

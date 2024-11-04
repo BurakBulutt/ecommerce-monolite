@@ -83,6 +83,7 @@ public class AuthServiceImpl implements AuthService {
                 .map(permissionDto -> new SimpleGrantedAuthority(permissionDto.getName()))
                 .toList();
 
+
         return new Token(jwtUtil.generateToken(userDetails, authorities));
     }
 

@@ -17,8 +17,13 @@ spring:
   data:
     mongodb:
       uri: ${MONGO_ATLAS_URI}
+    redis:
+      port: 6379
+      host: localhost
+  cache:
+    type: redis
 server:
-  port: 8090
+  port: 8080
 jwt :
   secret : ${JWT_SECRET}
 client :
@@ -29,6 +34,17 @@ mailSender :
   username : ${SMTP_USERNAME}
   password : ${SMTP_PASSWORD}
   from : ${SMTP_FROM}
+management:
+  endpoint:
+    health:
+      enabled: true
+  health:
+    redis:
+      enabled: true
+    db:
+      enabled: true
+    mongo:
+      enabled: true
 
 
 

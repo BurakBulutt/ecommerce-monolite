@@ -12,6 +12,10 @@ services:
       - ecommerce-network
     ports:
       - "5432:5432"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
 
   ecommerce:
     image: ecommerce:dev
@@ -22,6 +26,12 @@ services:
       - ecommerce-network
     ports:
       - "8090:8090"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8090/actuator/health"]
+      start_period: 30s
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
 networks:
   ecommerce-network:
