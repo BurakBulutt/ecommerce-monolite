@@ -53,7 +53,7 @@ public class AuthServiceImpl implements AuthService {
                 .name(request.name())
                 .surname(request.surname())
                 .username(request.username())
-                .password(encoder.encode(request.password()))
+                .password(request.password())
                 .userType(UserType.USER)
                 .isActive(Boolean.TRUE)
                 .isVerified(Boolean.TRUE)
@@ -82,6 +82,7 @@ public class AuthServiceImpl implements AuthService {
         List<SimpleGrantedAuthority> authorities = permissions.stream()
                 .map(permissionDto -> new SimpleGrantedAuthority(permissionDto.getName()))
                 .toList();
+
 
         return new Token(jwtUtil.generateToken(userDetails, authorities));
     }

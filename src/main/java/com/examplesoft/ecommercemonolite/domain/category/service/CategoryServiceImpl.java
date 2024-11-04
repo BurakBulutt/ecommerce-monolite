@@ -10,6 +10,10 @@ import com.examplesoft.ecommercemonolite.util.BaseException;
 import com.examplesoft.ecommercemonolite.util.MessageUtil;
 import com.examplesoft.ecommercemonolite.util.PageUtil;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,12 +26,15 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
+@Slf4j
 public class CategoryServiceImpl implements CategoryService {
     private final CategoryRepository repository;
     private final ApplicationEventPublisher publisher;
 
     @Override
+    @Cacheable(value = "categoryCache", key = "#pageable.pageNumber + '_' + #pageable.pageSize")
     public Page<CategoryDto> getAll(Pageable pageable) {
+        log.info("CACHE KULLANILMADI! Veritabanına erişim başlıyor...");
         return PageUtil.toPage(repository.findAll(pageable), CategoryMapper::toDto);
     }
 
@@ -37,6 +44,7 @@ public class CategoryServiceImpl implements CategoryService {
     }
 
     @Override
+    @Cacheable(value = "categoryCache", key = "#id")
     public CategoryDto getById(String id) {
         return repository.findById(id).map(CategoryMapper::toDto).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Category.class.getSimpleName(), id));
     }
@@ -58,6 +66,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CachePut(value = "categoryCache", key = "#id")
     public CategoryDto update(String id, CategoryDto dto) {
         Category category = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Category.class.getSimpleName(), id));
         if (category.getParentId() != null && repository.findById(category.getParentId()).isEmpty()) {
@@ -68,6 +77,7 @@ public class CategoryServiceImpl implements CategoryService {
 
     @Override
     @Transactional
+    @CacheEvict(key = "#id",value = "categoryCache")
     public void delete(String id) {
         Category category = repository.findById(id).orElseThrow(() -> new BaseException(MessageUtil.ENTITY_NOT_FOUND, Category.class.getSimpleName(), id));
         publisher.publishEvent(new CategoryDeleteEvent(category.getId()));

@@ -4,28 +4,34 @@ services:
   postgres:
     image: postgres:16-alpine
     container_name: ecommerce-db
-    environment:
-      POSTGRES_DB: db_ecommerce_monolite
-      POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres
+    env_file:
+      - secret.env
     volumes:
       - db_data:/var/lib/postgresql/data
     networks:
       - ecommerce-network
     ports:
       - "5432:5432"
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
 
   ecommerce:
     image: ecommerce:dev
     container_name: ecommerce-project
     env_file:
       - secret.env
-    environment:
-      DB_URL: "jdbc:postgresql://ecommerce-db:5432/db_ecommerce_monolite"
     networks:
       - ecommerce-network
     ports:
       - "8090:8090"
+    healthcheck:
+      test: ["CMD","curl","-f","http://localhost:8090/actuator/health"]
+      start_period: 30s
+      interval: 10s
+      timeout: 3s
+      retries: 3
 
 networks:
   ecommerce-network:

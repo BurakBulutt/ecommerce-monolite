@@ -63,7 +63,6 @@ public class JwtUtil {
         Claims claims = extractClaims(token);
         List<Map<String, String>> authorities = (List<Map<String, String>>) claims.get("authorities");
 
-
         if (authorities == null || authorities.isEmpty()) {
             throw new BaseException(MessageUtil.UNAUTHORIZED);
         }
