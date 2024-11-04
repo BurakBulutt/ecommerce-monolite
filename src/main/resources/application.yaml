@@ -13,10 +13,10 @@ spring:
     driver-class-name: org.postgresql.Driver
     username: ${DB_USERNAME}
     password: ${DB_PASSWORD}
-    url: ${DB_URL}
+    url: jdbc:postgresql://localhost:5432/db_ecommerce_monolite
   data:
     mongodb:
-      uri: ${MONGO_ATLAS_URI}
+      uri: mongodb://${MONGO_USERNAME}:${MONGO_PASSWORD}@localhost:27017/${MONGO_DATABASE}?authSource=admin&authMechanism=SCRAM-SHA-1
     redis:
       port: 6379
       host: localhost
