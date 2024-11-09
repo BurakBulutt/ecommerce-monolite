@@ -22,6 +22,10 @@ spring:
       host: localhost
   cache:
     type: redis
+  kafka:
+    bootstrap-servers: localhost:9092
+    consumer:
+      group-id: consumer-group
 server:
   port: 8080
 jwt :
