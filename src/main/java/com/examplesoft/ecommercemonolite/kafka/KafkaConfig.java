@@ -40,11 +40,11 @@ public class KafkaConfig {
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
         props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaAddress);
-        props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-group"); // Consumer grup kimliği
+        props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
-        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class.getName());
-        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.examplesoft.ecommercemonolite"); // Paket adı ekleyin
+        props.put(ErrorHandlingDeserializer.VALUE_DESERIALIZER_CLASS, JsonDeserializer.class);
+        props.put(JsonDeserializer.TRUSTED_PACKAGES, "com.examplesoft.ecommercemonolite.*");
 
         return new DefaultKafkaConsumerFactory<>(props);
     }
@@ -72,6 +72,15 @@ public class KafkaConfig {
     @Bean
     public NewTopic firstTopic() {
         return TopicBuilder.name("first-topic")
+                .partitions(1)
+                .replicas(1)
+                .config(TopicConfig.RETENTION_MS_CONFIG, "86400000")
+                .build();
+    }
+
+    @Bean
+    public NewTopic secondTopic() {
+        return TopicBuilder.name("second-topic")
                 .partitions(1)
                 .replicas(1)
                 .config(TopicConfig.RETENTION_MS_CONFIG, "86400000")

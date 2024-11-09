@@ -1,14 +1,18 @@
 package com.examplesoft.ecommercemonolite.domain.product.dto;
 
 import com.examplesoft.ecommercemonolite.domain.category.dto.CategoryDto;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 import java.util.List;
 
 @Data
 @Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class ProductDto {
     private String id;
     private String code;
