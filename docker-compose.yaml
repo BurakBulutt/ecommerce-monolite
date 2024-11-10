@@ -55,6 +55,20 @@ services:
         max_attempts: 3
       replicas: 2
 
+  kafka:
+    image: apache/kafka
+    container_name: ecommerce_kafka
+    restart: always
+    ports:
+      - "9092:9092"
+    networks:
+      - ecommerce-network
+    deploy:
+      restart_policy:
+        condition: on-failure
+        max_attempts: 3
+      replicas: 1
+
   ecommerce:
     image: ecommerce:dev
     container_name: ecommerce-project

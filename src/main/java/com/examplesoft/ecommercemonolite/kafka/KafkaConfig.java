@@ -24,13 +24,23 @@ import java.util.Map;
 @Configuration
 @EnableKafka
 public class KafkaConfig {
-    @Value("${spring.kafka.bootstrap-servers}")
-    private String kafkaAddress;
+
+    @Bean
+    public KafkaAdmin kafkaAdmin() {
+        Map<String, Object> configs = new HashMap<>();
+        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
+        return new KafkaAdmin(configs);
+    }
+
+    @Bean
+    public KafkaTemplate<String, Object> kafkaTemplate() {
+        return new KafkaTemplate<>(producerFactory());
+    }
 
     @Bean
     public ProducerFactory<String, Object> producerFactory() {
         Map<String, Object> configProps = new HashMap<>();
-        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaAddress);
+        configProps.put(ProducerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaAdmin().getConfigurationProperties().get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         configProps.put(ProducerConfig.KEY_SERIALIZER_CLASS_CONFIG, StringSerializer.class);
         configProps.put(ProducerConfig.VALUE_SERIALIZER_CLASS_CONFIG, JsonSerializer.class);
         return new DefaultKafkaProducerFactory<>(configProps);
@@ -39,7 +49,7 @@ public class KafkaConfig {
     @Bean
     public ConsumerFactory<String, Object> consumerFactory() {
         Map<String, Object> props = new HashMap<>();
-        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaAddress);
+        props.put(ConsumerConfig.BOOTSTRAP_SERVERS_CONFIG, kafkaAdmin().getConfigurationProperties().get(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG));
         props.put(ConsumerConfig.GROUP_ID_CONFIG, "consumer-group");
         props.put(ConsumerConfig.KEY_DESERIALIZER_CLASS_CONFIG, StringDeserializer.class);
         props.put(ConsumerConfig.VALUE_DESERIALIZER_CLASS_CONFIG, ErrorHandlingDeserializer.class);
@@ -55,18 +65,6 @@ public class KafkaConfig {
                 new ConcurrentKafkaListenerContainerFactory<>();
         factory.setConsumerFactory(consumerFactory());
         return factory;
-    }
-
-    @Bean
-    public KafkaTemplate<String, Object> kafkaTemplate() {
-        return new KafkaTemplate<>(producerFactory());
-    }
-
-    @Bean
-    public KafkaAdmin kafkaAdmin() {
-        Map<String, Object> configs = new HashMap<>();
-        configs.put(AdminClientConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
-        return new KafkaAdmin(configs);
     }
 
     @Bean
