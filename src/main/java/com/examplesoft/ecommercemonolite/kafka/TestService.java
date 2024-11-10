@@ -11,6 +11,8 @@ import org.springframework.kafka.annotation.KafkaListener;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+
 @Service
 @RequiredArgsConstructor
 @Slf4j
@@ -23,21 +25,22 @@ public class TestService {
         kafkaTemplate.send("first-topic", "İlk Kafka mesajı gönderiliyor");
         ProductDto productDto = ProductDto.builder()
                 .name("ürün")
+                .originalPrice(BigDecimal.valueOf(150))
                 .build();
         kafkaTemplate.send("second-topic", productDto);
     }
 
     @KafkaListener(topics = "first-topic", groupId = "consumer-group", containerFactory = "kafkaListenerContainerFactory")
     public void getMessage(String message){
-        log.info("Mesaj Başarıyla Alındı {}", message);
+        log.info("Mesaj Başarıyla Alındı: {}", message);
     }
 
-    @KafkaListener(topics = "second-topic", groupId = "consumer-group", containerFactory = "kafkaListenerContainerFactory")
+    @KafkaListener(topics = "second-topic", groupId = "consumer-group",containerFactory = "kafkaListenerContainerFactory2")
     public void getMessage(ProductDto productDto){
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String objStr = objectMapper.writeValueAsString(productDto);
-            log.info("Mesaj Başarıyla Alındı {}", objStr);
+            log.info("Mesaj Başarıyla Alındı: {}", objStr);
         } catch (JsonProcessingException e) {
             log.error("Başarısız!");
         }
