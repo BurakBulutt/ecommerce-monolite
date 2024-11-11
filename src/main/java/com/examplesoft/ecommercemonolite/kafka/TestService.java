@@ -1,5 +1,6 @@
 package com.examplesoft.ecommercemonolite.kafka;
 
+import com.examplesoft.ecommercemonolite.domain.campaign.dto.CampaignDto;
 import com.examplesoft.ecommercemonolite.domain.product.dto.ProductDto;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -20,7 +21,7 @@ public class TestService {
     private final KafkaTemplate<String, Object> kafkaTemplate;
 
     @EventListener(value = ApplicationReadyEvent.class)
-    public void startTesting(){
+    public void startTesting() {
         log.warn("Mesaj Gönderimi Başlıyor");
         kafkaTemplate.send("first-topic", "İlk Kafka mesajı gönderiliyor");
         ProductDto productDto = ProductDto.builder()
@@ -31,16 +32,16 @@ public class TestService {
     }
 
     @KafkaListener(topics = "first-topic", groupId = "consumer-group", containerFactory = "kafkaListenerContainerFactory")
-    public void getMessage(String message){
+    public void getMessage(String message) {
         log.info("Mesaj Başarıyla Alındı: {}", message);
     }
 
-    @KafkaListener(topics = "second-topic", groupId = "consumer-group",containerFactory = "kafkaListenerContainerFactory2")
-    public void getMessage(ProductDto productDto){
+    @KafkaListener(topics = "second-topic", groupId = "consumer-group", containerFactory = "kafkaListenerContainerFactory")
+    public void getProductMessage(ProductDto productDto) {
         ObjectMapper objectMapper = new ObjectMapper();
         try {
             String objStr = objectMapper.writeValueAsString(productDto);
-            log.info("Mesaj Başarıyla Alındı: {}", objStr);
+            log.info("Ürün Mesajı Başarıyla Alındı: {}", objStr);
         } catch (JsonProcessingException e) {
             log.error("Başarısız!");
         }
