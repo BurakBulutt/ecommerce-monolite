@@ -70,7 +70,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic firstTopic() {
         return TopicBuilder.name("first-topic")
-                .partitions(1)
+                .partitions(2)
                 .replicas(1)
                 .config(TopicConfig.RETENTION_MS_CONFIG, "60000")
                 .build();
@@ -79,7 +79,7 @@ public class KafkaConfig {
     @Bean
     public NewTopic secondTopic() {
         return TopicBuilder.name("second-topic")
-                .partitions(1)
+                .partitions(2)
                 .replicas(1)
                 .config(TopicConfig.RETENTION_MS_CONFIG, "60000")
                 .build();
